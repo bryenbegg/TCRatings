@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using TCRatings.Client;
@@ -14,8 +15,10 @@ namespace TCRatings.Controllers
     {
         private readonly IConfiguration _config;
 
-        private readonly RatingsClient clientRating = new RatingsClient(new System.Net.Http.HttpClient());
-        private readonly RatingTypesClient clientRatingType = new RatingTypesClient(new System.Net.Http.HttpClient());
+        private RatingsClient clientRating;
+        private RatingTypesClient clientRatingType;
+
+        public System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
 
         public RatingsController(IConfiguration config)
         {
@@ -23,9 +26,41 @@ namespace TCRatings.Controllers
 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
+                
+
+                clientRating = new RatingsClient(client);
+                clientRatingType = new RatingTypesClient(client);
+
+
+                clientRating.BaseUrl = _config.GetValue<string>("APIBaseURL");
+                clientRatingType.BaseUrl = _config.GetValue<string>("APIBaseURL");
+
+            }
+            else
+            {
+                clientRating = new RatingsClient(client);
+                clientRatingType = new RatingTypesClient(client);
+            }
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+
+                client.DefaultRequestHeaders.Accept.Clear();
+
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Request.Headers["X-MS-TOKEN-AAD-ACCESS-TOKEN"]);
+
+                clientRating = new RatingsClient(client);
+                clientRatingType = new RatingTypesClient(client);
+
                 clientRating.BaseUrl = _config.GetValue<string>("APIBaseURL");
                 clientRatingType.BaseUrl = _config.GetValue<string>("APIBaseURL");
             }
+
         }
 
         // GET: Ratings

@@ -25,19 +25,19 @@ namespace TCRatings.API.Models
                 var lstRatingTypes = new List<RatingType>();
                 lstRatingTypes.Add(new RatingType
                 {
-                    Id = 1,
+                    //Id = 1,
                     Name = "Excellent"
                 });
 
                 lstRatingTypes.Add(new RatingType
                 {
-                    Id = 2,
+                    //Id = 2,
                     Name = "Moderate"
                 });
 
                 lstRatingTypes.Add(new RatingType
                 {
-                    Id = 3,
+                    //Id = 3,
                     Name = "Needs Improvement"
                 });
 
@@ -46,7 +46,7 @@ namespace TCRatings.API.Models
                 ctx.Rating.AddRange(
                     new Rating
                     {
-                        Id = 1,
+                        //Id = 1,
                         Comments = "This was made on seeding of the database.",
                         CreatedDate = DateTime.Now,
                         RatingTypeId = 1

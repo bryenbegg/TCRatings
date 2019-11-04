@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TCRatings.API.Models;
 using TCRatings.DAL;
 
 namespace TCRatings.API
@@ -29,15 +30,18 @@ namespace TCRatings.API
         public void ConfigureServices(IServiceCollection services)
         {
             // Use SQL Database if in Azure, otherwise, use SQLite
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            //if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
                 services.AddDbContext<RatingsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RatingsContext")));
-            else
-                services.AddDbContext<RatingsContext>(options => options.UseSqlite("Data Source=localdatabase.db"));
+            //else
+            //    services.AddDbContext<RatingsContext>(options => options.UseSqlite("Data Source=localdatabase.db"));
 
-
+            
 
             // Automatically perform database migration
             services.BuildServiceProvider().GetService<RatingsContext>().Database.Migrate();
+
+            // Try to seed the database
+            SeedData.Initialize(services.BuildServiceProvider());
 
             services.AddControllers();
 
