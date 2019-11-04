@@ -23,11 +23,11 @@ namespace TCRatings.DAL.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Comments")
-                        .HasColumnType("TEXT")
+                        .HasColumnType("nvarchar")
                         .HasMaxLength(250);
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar");
 
                     b.Property<int>("RatingTypeId")
                         .HasColumnType("INTEGER");
@@ -44,7 +44,7 @@ namespace TCRatings.DAL.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar");
 
                     b.HasKey("Id");
 

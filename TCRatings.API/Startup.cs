@@ -30,7 +30,7 @@ namespace TCRatings.API
         {
             // Use SQL Database if in Azure, otherwise, use SQLite
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-                services.AddDbContext<RatingsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RatingsConnection")));
+                services.AddDbContext<RatingsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RatingsContext")));
             else
                 services.AddDbContext<RatingsContext>(options => options.UseSqlite("Data Source=localdatabase.db"));
 
