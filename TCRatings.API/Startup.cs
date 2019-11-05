@@ -29,23 +29,18 @@ namespace TCRatings.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Use SQL Database if in Azure, otherwise, use SQLite
-            //if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-                services.AddDbContext<RatingsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RatingsContext")));
-            //else
-            //    services.AddDbContext<RatingsContext>(options => options.UseSqlite("Data Source=localdatabase.db"));
-
-            
+            services.AddDbContext<RatingsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RatingsContext")));
 
             // Automatically perform database migration
             services.BuildServiceProvider().GetService<RatingsContext>().Database.Migrate();
 
-            // Try to seed the database
+            // Try to seed the database (for Azure Web App that doesnt run Program.cs)
             SeedData.Initialize(services.BuildServiceProvider());
 
+            // Add the API controllers
             services.AddControllers();
 
-            // Register the Swagger services
+            // Register the OpenAPI/Swagger document services
             services.AddOpenApiDocument(doc =>
                 {
                     doc.DocumentName = "v1";
@@ -54,21 +49,6 @@ namespace TCRatings.API
                 }
             );
 
-            /* // Register the Swagger generator, defining 1 or more Swagger documents
-             services.AddSwaggerGen(c =>
-             {
-                 c.SwaggerDoc("v1", new OpenApiInfo
-                 {
-                     Title = "TC Ratings API",
-                     Version = "v1",
-                     Description = "An API to handle service feedback ratings and comments."
-                 });
-
-                 // Set the comments path for the Swagger JSON and UI.
-                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                 c.IncludeXmlComments(xmlPath);
-             });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,21 +62,13 @@ namespace TCRatings.API
             app.UseRouting();
 
             // Register the Swagger generator, the Swagger UI, and ReDoc middlewares
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
+            app.UseOpenApi(); // host the document
+            app.UseSwaggerUi3(); // host /swagger UI
             app.UseReDoc(opt => {
                 opt.DocumentPath = "/swagger/v1/swagger.json";
                 opt.Path = "/redoc";
               }
-            );
-
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            /* app.UseSwaggerUI(c =>
-             {
-                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "TC Ratings API v1");
-             });*/
+            ); // Host the /redoc UI (alternative look and feel)
 
             app.UseAuthorization();
 

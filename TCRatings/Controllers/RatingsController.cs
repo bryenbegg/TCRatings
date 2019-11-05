@@ -24,6 +24,7 @@ namespace TCRatings.Controllers
         {
             _config = config;
 
+            // Only if in production, replace the base URL of the clients that were auto-generated. 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
                 
@@ -47,6 +48,7 @@ namespace TCRatings.Controllers
         {
             base.OnActionExecuting(context);
 
+            // Only if in production, where Azure AD is present, add the fetching of the auth token and pass it along. 
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
 
@@ -117,12 +119,12 @@ namespace TCRatings.Controllers
         {
             try
             {
-
                 Client.Rating newRating = new Client.Rating();
                 newRating.Comments = collection.Where(x => x.Key.Equals("Comments")).Select(x => x.Value).FirstOrDefault();
                 newRating.RatingTypeId = int.Parse(collection.Where(x => x.Key.Equals("RatingTypeId")).Select(x => x.Value).FirstOrDefault());
                 newRating.CreatedDate = DateTime.Now;
 
+                // force waiting for the callback in order to see the results when moving to the list view
                 _ = clientRating.PostRatingAsync(newRating).GetAwaiter().GetResult();
 
                 return RedirectToAction(nameof(Index));

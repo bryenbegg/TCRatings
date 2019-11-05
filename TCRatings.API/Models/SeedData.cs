@@ -22,6 +22,7 @@ namespace TCRatings.API.Models
                     return; // DB has already been seeded
                 }
 
+                // Fill the base list of the Rating Types
                 var lstRatingTypes = new List<RatingType>();
                 lstRatingTypes.Add(new RatingType
                 {
@@ -43,10 +44,11 @@ namespace TCRatings.API.Models
 
                 ctx.RatingType.AddRange(lstRatingTypes);
 
+                // Fill some sample ratings to prove it worked in the UI. 
                 ctx.Rating.AddRange(
                     new Rating
                     {
-                        //Id = 1,
+
                         Comments = "This was made on seeding of the database.",
                         CreatedDate = DateTime.Now,
                         RatingTypeId = 1
